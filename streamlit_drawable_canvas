@@ -12,19 +12,19 @@ initial_data = {
             "type": "circle",
             "left": 150,  # X座標
             "top": 100,  # Y座標
-            "radius": 12,  # 点のサイズ
+            "radius": 6,  # 点のサイズ
             "fill": "red",  # 塗りつぶし色
             "stroke": "#000",
-            "strokeWidth": 2,
+            "strokeWidth": 1,
         },
         {
             "type": "circle",
             "left": 300,
             "top": 200,
-            "radius": 12,
+            "radius": 6,
             "fill": "blue",
             "stroke": "#000",
-            "strokeWidth": 2,
+            "strokeWidth": 1,
         },
     ],
 }
