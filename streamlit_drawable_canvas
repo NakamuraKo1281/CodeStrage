@@ -1,0 +1,54 @@
+import pandas as pd
+import streamlit as st
+from streamlit_drawable_canvas import st_canvas
+
+st.title("ドラッグで点を移動するデモ")
+
+# 初期配置する点（Fabric.js 形式のデータ）
+initial_data = {
+    "version": "4.4.0",
+    "objects": [
+        {
+            "type": "circle",
+            "left": 150,  # X座標
+            "top": 100,  # Y座標
+            "radius": 12,  # 点のサイズ
+            "fill": "red",  # 塗りつぶし色
+            "stroke": "#000",
+            "strokeWidth": 2,
+        },
+        {
+            "type": "circle",
+            "left": 300,
+            "top": 200,
+            "radius": 12,
+            "fill": "blue",
+            "stroke": "#000",
+            "strokeWidth": 2,
+        },
+    ],
+}
+
+# キャンバス設定
+canvas_result = st_canvas(
+    fill_color="rgba(255, 0, 0, 0.3)",
+    stroke_width=3,
+    stroke_color="#000",
+    background_color="#fff",
+    update_streamlit=True,
+    height=400,
+    width=600,
+    drawing_mode="transform",  # 図形の移動モード
+    initial_drawing=initial_data,  # 初期オブジェクトを指定
+    key="canvas",
+)
+
+# 移動後の各点の座標を抽出して表示
+if canvas_result.json_data is not None:
+    objects = canvas_result.json_data.get("objects", [])
+    if objects:
+        st.subheader("現在の座標")
+        for i, obj in enumerate(objects):
+            st.write(
+                f"点 {i+1} ({obj.get('fill')}): X = {obj.get('left'):.1f}, Y = {obj.get('top'):.1f}"
+            )
