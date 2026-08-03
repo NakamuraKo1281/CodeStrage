@@ -1,9 +1,7 @@
 import streamlit as st
-from bokeh.embed import file_html
 from bokeh.models import ColumnDataSource, PointDrawTool
 from bokeh.plotting import figure
-from bokeh.resources import CDN
-import streamlit.components.v1 as components
+from streamlit_bokeh import streamlit_bokeh
 
 st.title("Streamlit + Bokeh ドラッグ可能な点")
 
@@ -21,17 +19,17 @@ p = figure(
     width=600,
     height=400,
     tools="",
-    title="点をドラッグして動かせます",
+    title="左手正面",
 )
 
 # 3. 点の描画 (円)
-renderer = p.circle("x", "y", source=source, size=20, color="navy", alpha=0.8)
+# renderer = p.circle("x", "y", source=source, size=10, color="navy")
+renderer=p.scatter("x","y",source=source,size=10)
 
 # 4. PointDrawTool（ドラッグ機能）の有効化
 draw_tool = PointDrawTool(renderers=[renderer], add=False)
 p.add_tools(draw_tool)
 p.toolbar.active_tap = draw_tool
 
-# 5. BokehグラフをHTMLとしてレンダリングし、Streamlitのcomponentsで表示
-html_code = file_html(p, CDN, "bokeh_plot")
-components.html(html_code, height=430)
+# 表示
+streamlit_bokeh(p, use_container_width=True)
