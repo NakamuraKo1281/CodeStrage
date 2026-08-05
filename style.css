@@ -1,0 +1,12 @@
+body {
+    font-family: sans-serif;
+    padding: 20px;
+}
+.preview {
+    margin-top: 15px;
+    max-width: 300px;
+    max-height: 300px;
+    border: 2px solid #ccc;
+    display: none; /* 初期は非表示 */
+    object-fit: contain;
+}
