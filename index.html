@@ -9,12 +9,17 @@
 </head>
 
 <body>
-
-<h1>画像アップロードプレビュー</h1>
-<input type="file" id="fileInput" accept="image/*" required>
-<br>
-<img id="previewImage" class="preview" alt="プレビュー画像">
-
+    <div id="box">
+        <div id="side_hand">
+            <input type="file" id="side_upload" class="upload" accept="image/*">
+            <img id="side_img" class="hand_img" alt="手側面画像">
+        </div>
+    <br>
+        <div id="front_hand">
+            <input type="file" id="front_upload" class="upload" accept="image/*">
+            <img id="front_img"  class="hand_img" alt="手正面画像">
+        </div>
+    </div>
 
 </body>
 </html>
