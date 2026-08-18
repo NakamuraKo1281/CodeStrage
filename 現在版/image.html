@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>課題研究</title>
+<link href="image.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+
+
+    <div class="content">
+    <!-- 画像アップロード＆表示部分 -->
+    
+      <div id="side_c" style="flex-direction: column;">
+        <input type="file" id="side_up" accept="image/*" style="display: none;">
+        <button type="button" id="side_b">参照</button>
+        <canvas id="side_img" class="hand_img" style="background-color: gray;"></canvas>
+      </div>
+
+      <div id="front_c">
+        <input type="file" id="front_up" accept="image/*" style="display: none;">
+        <button type="button" id="front_b">参照</button>
+        <canvas id="front_img" class="hand_img" style="background-color: gray;"></canvas>
+      </div>
+
+    <!-- ここにコードを貼り付け -->
+    </div> <!--class content-->
+
+    <!-- ボタン表示 -->
+    <div class="button_box">
+      <button class="save_b" type="button">保存</button>
+
+      <button class="feedback_b" type="button">フィードバック開始</button>
+      
+      <button class="select_b" type="button">モデル選択</button>
+
+    </div>
+
+    <!-- 表 -->
+  <!-- 左側 -->
+    <div class="table_box">
+  <table class="table_l">
+  <tr>
+  <th class="sticky">部位</th>
+  <th class="sticky">長さ</th>
+  <th class="sticky">角度</th>
+  </tr>
+  <tr>
+    <td>人差し指</td>
+  <td class="empty"></td>
+  <td class="empty"></td>
+  </tr>
+  <tr>
+  <td>第一～第二関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第二～第三関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第三関節～指先</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+    <td>中指</td>
+  <td class="empty"></td>
+  <td class="empty"></td>
+  </tr>
+  <tr>
+  <td>第一～第二関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第二～第三関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第三関節～指先</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  
+  </table>
+
+  <!-- 中央 -->
+  <table class="table_c">
+  <tr>
+  <th class="sticky">部位</th>
+  <th class="sticky">長さ</th>
+  <th class="sticky">角度</th>
+  </tr>
+  <tr>
+    <td>薬指</td>
+  <td class="empty"></td>
+  <td class="empty"></td>
+  </tr>
+  <tr>
+  <td>第一～第二関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第二～第三関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第三関節～指先</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+    <td>小指</td>
+  <td class="empty"></td>
+  <td class="empty"></td>
+  </tr>
+  <tr>
+  <td>第一～第二関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第二～第三関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第三関節～指先</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  </table>
+
+<table class="table_r">
+  <tr>
+  <th class="sticky">部位</th>
+  <th class="sticky">長さ</th>
+  <th class="sticky">角度</th>
+  </tr>
+  <tr>
+    <td>親指</td>
+  <td class="empty"></td>
+  <td class="empty"></td>
+  </tr>
+  <tr>
+  <td>第一～第二関節</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>第二関節～指先</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <!-- 空欄 -->
+  <tr>
+  <td class="empty"><br></td>
+  <td class="empty"><br></td>
+  <td class="empty"><br></td>
+  </tr>
+    <td>その他</td>
+  <td class="empty"></td>
+  <td class="empty"></td>
+  </tr>
+  <tr>
+  <td>中指付け根～手首</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>親指付け根～手首</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  <tr>
+  <td>小指～人差し指</td>
+  <td>テキスト</td>
+  <td>テキスト</td>
+  </tr>
+  </table>
+
+    </div><!--class table_box-->
+  
+  <!-- コメント部分 -->
+  <div class="comments">
+    <h1>コメント</h1>
+    <p>これはテストコメントです</p>
+    <p>これもテストコメントです</p>
+    <p>吾輩は猫である</p>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@latest/dist/chartjs-plugin-dragdata.min.js"></script>
+<script src="image.js" ></script>
+</body>
+</html>
