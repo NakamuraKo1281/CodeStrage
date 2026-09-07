@@ -1,8 +1,3 @@
-/* 全要素で border-box を適用（padding/border による余白膨らみを防止） */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
 html, body {
   height: 100%;
   margin: 0;
@@ -13,7 +8,7 @@ html, body {
 .content {
   background-color: #b3d874;
   width: 100%;
-  height: auto;
+  height: 100%;
   min-height: 45vw;
   display: flex;
   justify-content: center;
@@ -22,7 +17,7 @@ html, body {
 }
 
 #side_c, #front_c {
-  width: 40vw;
+  width: 40%;
   padding: 10px;
   gap: 10px;
   display: flex;
@@ -36,15 +31,32 @@ html, body {
   flex-shrink: 0;
 }
 
+
+.chart_c {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative; /* Chart.jsのレスポンシブ崩れ防止 */
+}
+
+.hand_img, 
+.chart_c canvas {
+  width: 100% !important;
+  height: 100% !important;
+  border: 6px solid #000;
+  background-color: gray;
+}
+
 .hand_img {
   width: 100%;
-  height: 100%;
+  height: auto;
   aspect-ratio: 1/1;
   border: 6px solid #000;
   /* background-size: cover;
   background-position: center;
   background-repeat: no-repeat; */
+  align-self: flex-start;
 }
+
 
 .button_box {
     direction: rtl; /*右寄せにする*/
@@ -54,7 +66,7 @@ html, body {
 }
 
 /* 三つのボタンの幅をそろえる */
-.save_b, .feedback_b, .select_b {
+#save_b, #feed_b, #select_b {
   width: 15%;
 }
 
@@ -123,120 +135,5 @@ td {
   padding-top: 0.05%;
   padding-left: 2%;
   margin-top: 1%;
-  border: 3px solid #000;   /* 枠線を追加 */
-}html,body{
-  /* width:100%; */
-  height:100%;
-}
-
-/* メインコンテンツ */
-.content {
-  /* 背景色は変えても大丈夫です */
-  background-color:#b3d874;
-  width:100%;
-  height:95vh;
-  display: flex;
-  gap: 10vw;
-}
-
-#side_c, #front_c {
-  width: 40vw;
-  height: 40vw;
-  padding-top: 3%;
-  padding-left: 3%;
-  gap: 2%;
-  display: flex;
-  flex-direction: column; /* 子要素を縦に並べる */
-  align-items: flex-start; /* 左寄せにする場合 */
-}
-
-#side_b,#front_b{
-  width: 3rem;
-  height: 2rem;
-}
-
-.hand_img{
-  width: 100%;
-  height: 100%;
-  border: 6px solid #000;
-  /* background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat; */
-  
-}
-
-.button_box{
-    direction: rtl; /*右寄せにする*/
-    padding: 1vh;
-    /* background: #fff9cc; */
-    display:block;
-}
-
-/* 三つのボタンの幅をそろえる */
-.save_b, .feedback_b, .select_b{
-  width:15%;
-}
-
-
-/* 表 */
-.table_box{
-  overflow-y: auto;
-  width:100%;
-  -webkit-overflow-scrolling: touch;
-  display:flex;
-}
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-}
-th, td {
-  vertical-align: middle;
-  padding: 10px;
-  border: 1px solid #000;
-  color: #000;
-  font-size: 14px;
-  text-align: center;
-  white-space: nowrap;
-}
-th {
-  background: #000;
-}
-td {
-  background: #fff;
-}
-.sticky {
-  position: sticky;
-  top: 0;
-  left: 0;
-  border-top: none;
-}
-.sticky::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
-  background: #ccc;
-  z-index: -1;
-}
-
-/* 空部分の色の指定 */
-.empty{
-  background:#ccc;
-}
-
-
-.comments{
-  background-color:#ffffff;
-  width:100%;
-  box-sizing:border-box;
-  text-align:left;
-  padding-top:0.05%;
-  padding-left:2%;
-  margin-top:1%;
   border: 3px solid #000;   /* 枠線を追加 */
 }
