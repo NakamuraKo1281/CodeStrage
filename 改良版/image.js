@@ -38,7 +38,6 @@ function Fileupload(hand_up, canvas_id, chartInstance) {
     const img = new Image();
     img.src = e.target.result;
     img.onload = () => {
-      // 読み込んだ画像オブジェクトを格納し、チャートを更新
       bgImages[canvas_id] = img;
       chartInstance.update();
     };
@@ -69,7 +68,17 @@ const first_webspace = 6; // 親指と人差し指の間
 const first_webspace_start = 0;
 const first_webspace_end = 1;
 
-// 設定生成用の関数（canvas_idを受け取るように変更）
+// 操作中のイベントから対象の Chart オブジェクト (side_chart または front_chart) を特定する関数
+function getCurrentChart(e) {
+  const targetCanvas = e.target || (e.native && e.native.target);
+  if (targetCanvas) {
+    if (targetCanvas.id === "side_img") return side_chart;
+    if (targetCanvas.id === "front_img") return front_chart;
+  }
+  return null;
+}
+
+// 設定生成用の関数（canvas_idを受け取る）
 function createChartConfig(canvas_id) {
   return {
     type: 'line',
@@ -127,7 +136,6 @@ function createChartConfig(canvas_id) {
             { x: 30, y: 65 },
             { x: 35, y: 80 },
             { x: 40, y: 95 },
-            { x: 45, y: 110 },
           ],
           backgroundColor: 'rgba(99, 255, 135, 0.7)',
           borderColor: 'rgb(69, 143, 85)',
@@ -175,7 +183,6 @@ function createChartConfig(canvas_id) {
         }
       ]
     },
-    // チャート描画前に背景画像をグラフエリア（枠内）に描画するカスタムプラグイン
     plugins: [{
       id: 'customCanvasBackgroundImage',
       beforeDraw: (chart) => {
@@ -184,7 +191,6 @@ function createChartConfig(canvas_id) {
           const { ctx, chartArea } = chart;
           ctx.save();
 
-          // 1. グラフエリア（軸の枠内）のみを描画領域としてクリッピング（はみ出し防止）
           ctx.beginPath();
           ctx.rect(
             chartArea.left,
@@ -194,7 +200,6 @@ function createChartConfig(canvas_id) {
           );
           ctx.clip();
 
-          // 2. 縦横比を維持して枠内一杯に広げる計算 (cover)
           const areaWidth = chartArea.right - chartArea.left;
           const areaHeight = chartArea.bottom - chartArea.top;
           const imgAspect = img.width / img.height;
@@ -203,22 +208,17 @@ function createChartConfig(canvas_id) {
           let renderWidth, renderHeight;
 
           if (imgAspect > areaAspect) {
-            // 画像の方が横長の場合：高さを合わせる（左右が溢れて切り取られる）
             renderHeight = areaHeight;
             renderWidth = areaHeight * imgAspect;
           } else {
-            // 画像の方が縦長の場合：幅を合わせる（上下が溢れて切り取られる）
             renderWidth = areaWidth;
             renderHeight = areaWidth / imgAspect;
           }
 
-          // 中央揃えで配置するための座標計算
           const renderX = chartArea.left + (areaWidth - renderWidth) / 2;
           const renderY = chartArea.top + (areaHeight - renderHeight) / 2;
 
-          // 3. 画像の描画
           ctx.drawImage(img, renderX, renderY, renderWidth, renderHeight);
-
           ctx.restore();
         }
       }
@@ -254,137 +254,99 @@ function createChartConfig(canvas_id) {
           onDragStart: function (e, datasetIndex, index, value) {
             dragStartX = value.x;
             dragStartY = value.y;
-            e.target.style.cursor = 'grabbing';
+            if (e.target) e.target.style.cursor = 'grabbing';
           },
 
           onDrag: function (e, datasetIndex, index, value) {
-            if (!e || !e.chart) return;
+            // キャンバスIDから直接 side_chart または front_chart を特定
+            const chart = getCurrentChart(e);
+            if (!chart) return;
 
-            const chart = e.chart;
             const dx = value.x - dragStartX;
             const dy = value.y - dragStartY;
 
             // 1. 手首 (index === datum) ドラッグ時の連動処理
             if (index === datum && datasetIndex <= 4) {
+              const fingerIndices = [finger.fore, finger.middle, finger.third, finger.little, finger.thumb];
 
-              //それぞれの手首の座標を取得
-              const datum_f = 
-                myChart.data.datasets[finger.fore].data[datum];
-    
-              const datum_m =
-                myChart.data.datasets[finger.middle].data[datum];
-              
-              const datum_t =
-                myChart.data.datasets[finger.third].data[datum];
-    
-              const datum_l =
-                myChart.data.datasets[finger.little].data[datum];
-    
-              const datum_thumb =
-                myChart.data.datasets[finger.thumb].data[datum];
-    
-              // 対応する点（各指の一番下の点）を同じ量だけ移動させる
-              datum_f.x += dx;
-              datum_f.y += dy;
-    
-              datum_m.x += dx;
-              datum_m.y += dy;
-    
-              datum_t.x += dx;
-              datum_t.y += dy;
-    
-              datum_l.x += dx;
-              datum_l.y += dy;
-    
-              datum_thumb.x += dx;
-              datum_thumb.y += dy;
-    
-              // 現在位置を次の基準にする
+              fingerIndices.forEach((fIdx) => {
+                const p = chart.data.datasets[fIdx].data[datum];
+                if (p) {
+                  p.x += dx;
+                  p.y += dy;
+                }
+              });
+
               dragStartX = value.x;
               dragStartY = value.y;
-    
-              // グラフを更新
-              myChart.update('none');
-              }
-    
-              //付け根連動
-              if (index == root){
-    
-                if(datasetIndex == finger.fore){
-    
-                  const root_s = 
-                    myChart.data.datasets[roots].data[root_start];
-    
-                  const first_webspace_e =
-                    myChart.data.datasets[first_webspace].data[first_webspace_end];
-                  
-                  root_s.x += dx;
-                  root_s.y += dy;
-    
-                  first_webspace_e.x += dx;
-                  first_webspace_e.y += dy;
-    
-                  dragStartX = value.x;
-                  dragStartY = value.y;
-    
-                  myChart.update('none');
-    
-                } else if(datasetIndex == finger.little){
-                    const root_e =
-                      myChart.data.datasets[roots].data[root_end];
-    
-                  // 対応する点（各指の一番下の点）を同じ量だけ移動させる
-                    root_e.x += dx;
-                    root_e.y += dy;
-    
-                  //現在位置を次の基準にする
-                  dragStartX = value.x;
-                  dragStartY = value.y;
-    
-                  myChart.update('none');
-    
-                } else if(datasetIndex == finger.thumb){
-                  const first_webspace_s =
-                    myChart.data.datasets[first_webspace].data[first_webspace_start];
-    
-                // 対応する点（各指の一番下の点）を同じ量だけ移動させる
-                  first_webspace_s.x += dx;
-                  first_webspace_s.y += dy;
-    
-                //現在位置を次の基準にする
+
+              chart.update('none');
+            }
+
+            // 2. 付け根連動 (index === root)
+            if (index === root) {
+              if (datasetIndex === finger.fore) {
+                const root_s = chart.data.datasets[roots].data[root_start];
+                const first_webspace_e = chart.data.datasets[first_webspace].data[first_webspace_end];
+
+                if (root_s) { root_s.x += dx; root_s.y += dy; }
+                if (first_webspace_e) { first_webspace_e.x += dx; first_webspace_e.y += dy; }
+
                 dragStartX = value.x;
                 dragStartY = value.y;
-    
-                myChart.update('none');
-              }
-              }
-    
-              console.log(datasetIndex, index)
-    
-    
-            },
 
-          onDragEnd: function (e, datasetIndex, index, value) {
-            e.target.style.cursor = 'default';
+                chart.update('none');
 
-            if (e && e.chart) {
-              const chart = e.chart;
-              // 手首ドラッグ終了時、全手首の座標をドラッグ終了位置へ一括で揃える
-              if (index === datum && datasetIndex <= 4) {
-                const targetX = value.x;
-                const targetY = value.y;
-                [finger.fore, finger.middle, finger.third, finger.little, finger.thumb].forEach((fIdx) => {
-                  chart.data.datasets[fIdx].data[datum].x = targetX;
-                  chart.data.datasets[fIdx].data[datum].y = targetY;
-                });
-                chart.update();
+              } else if (datasetIndex === finger.little) {
+                const root_e = chart.data.datasets[roots].data[root_end];
+
+                if (root_e) { root_e.x += dx; root_e.y += dy; }
+
+                dragStartX = value.x;
+                dragStartY = value.y;
+
+                chart.update('none');
+
+              } else if (datasetIndex === finger.thumb) {
+                const first_webspace_s = chart.data.datasets[first_webspace].data[first_webspace_start];
+
+                if (first_webspace_s) { first_webspace_s.x += dx; first_webspace_s.y += dy; }
+
+                dragStartX = value.x;
+                dragStartY = value.y;
+
+                chart.update('none');
               }
-              updateCoordList(chart);
             }
           },
 
+          onDragEnd: function (e, datasetIndex, index, value) {
+            if (e.target) e.target.style.cursor = 'default';
+
+            const chart = getCurrentChart(e);
+            if (!chart) return;
+
+            if (index === datum && datasetIndex <= 4) {
+              const targetX = value.x;
+              const targetY = value.y;
+              const fingerIndices = [finger.fore, finger.middle, finger.third, finger.little, finger.thumb];
+
+              fingerIndices.forEach((fIdx) => {
+                const p = chart.data.datasets[fIdx].data[datum];
+                if (p) {
+                  p.x = targetX;
+                  p.y = targetY;
+                }
+              });
+
+              chart.update('none');
+            }
+
+            updateCoordList(chart);
+          },
+
           onHover: function (e) {
-            e.target.style.cursor = 'grab';
+            if (e.target) e.target.style.cursor = 'grab';
           }
         },
         tooltip: {
@@ -399,11 +361,11 @@ function createChartConfig(canvas_id) {
   };
 }
 
-// グラフインスタンス作成（引数に canvas ID を指定）
+// グラフインスタンス作成
 const side_chart = new Chart(ctx1, createChartConfig("side_img"));
 const front_chart = new Chart(ctx2, createChartConfig("front_img"));
 
-// イベントリスナー登録（第3引数に対応するチャートを渡す）
+// イベントリスナー登録
 side_up.addEventListener("change", () => {
   Fileupload(side_up, "side_img", side_chart);
 });
@@ -415,7 +377,6 @@ front_up.addEventListener("change", () => {
 const BUTTON_CLICK_EVENT = document.getElementById('feed_b');
 if (BUTTON_CLICK_EVENT) {
   BUTTON_CLICK_EVENT.addEventListener('click', () => {
-    // alert("ボタンがクリックされました");
   });
 }
 
