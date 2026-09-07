@@ -21,13 +21,17 @@
     <div id="side_c" style="flex-direction: column;">
         <input type="file" id="side_up" accept="image/*" style="display: none;">
         <button type="button" id="side_b">参照</button>
-        <canvas id="side_img" class="hand_img" style="background-color: gray;"></canvas>
+        <div class="chart_c">
+            <canvas id="side_img" class="hand_img" style="background-color: gray;"></canvas>
+        </div>
       </div>
 
       <div id="front_c">
         <input type="file" id="front_up" accept="image/*" style="display: none;">
         <button type="button" id="front_b">参照</button>
-        <canvas id="front_img" class="hand_img" style="background-color: gray;"></canvas>
+        <div class="chart_c">
+            <canvas id="front_img" class="hand_img" style="background-color: gray;"></canvas>
+        </div>
       </div>
 
     <!-- ここにコードを貼り付け
@@ -42,9 +46,9 @@
 
     <!-- ボタン表示 -->
     <div class="button_box">
-      <button class="save_b" type="button">保存</button>
+      <button id="save_b" type="button">保存</button>
       <button id="feed_b" type="button">フィードバック開始</button>
-      <button class="select_b" type="button">モデル選択</button>
+      <button id="select_b" type="button">モデル選択</button>
     
     </div>
 
