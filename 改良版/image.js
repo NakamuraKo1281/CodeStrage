@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-
-
 const ctx1 = document.getElementById("side_img").getContext("2d");
 const ctx2 = document.getElementById("front_img").getContext("2d");
 
@@ -469,7 +467,7 @@ const collect_length = {
     little: { t_s: 15.5, s_f: 15.5, f_t: 15.5 },
     thumb: { s_f: 20.5, f_t: 20.5 }
   },
-  root: { f_l: 55.5, t_f: 35, d_m: 80, d_t: 70.5 }　　//f-lは人差し指付け根から小指付け根まで、t_fは第一指間腔、d_mは手首から中指付け根まで、d_tは手首から親指付け根まで
+  root: { f_l: 55.5, t_f: 35, d_m: 80, d_t: 70.5 }  //f-lは人差し指付け根から小指付け根まで、t_fは第一指間腔、d_mは手首から中指付け根まで、d_tは手首から親指付け根まで
 };
 
 
@@ -727,7 +725,6 @@ const scene1 = new THREE.Scene();
 const camera1 = new THREE.PerspectiveCamera(45, handCanvas1.clientWidth / handCanvas1.clientHeight, 0.1, 1000);
 camera1.position.set(0, 50, 250);
 
-
 const renderer1 = new THREE.WebGLRenderer({ canvas: handCanvas1, alpha: true, antialias: true });
 renderer1.setSize(handCanvas1.clientWidth, handCanvas1.clientHeight, false);
 renderer1.setPixelRatio(window.devicePixelRatio);
@@ -798,15 +795,16 @@ function update3DHand() {
   while (handGroup1.children.length > 0) handGroup1.remove(handGroup1.children[0]);
   while (handGroup2.children.length > 0) handGroup2.remove(handGroup2.children[0]);
 
-  // side_chart (X: 横, Y: 縦) と front_chart (X: 奥行き, Y: 縦) の座標を取得
+  // side_chart と front_chart の座標データを取得
   const sideDatasets = side_chart.data.datasets;
   const frontDatasets = front_chart.data.datasets;
 
   const sphereGeo = new THREE.SphereGeometry(2.5, 16, 16);
   const sphereMat = new THREE.MeshLambertMaterial({ color: 0xff0055, wireframe: true });
 
-  // 3D 座標を保持する構造 [fingerIndex][pointIndex] = THREE.Vector3
-  const joints3D = [[], [], [], [], []];
+  // 各キャンバス用の 3D 座標配列を用意
+  const joints3D_1 = [[], [], [], [], []]; // handCanvas1 用 (side の Y 座標を使用)
+  const joints3D_2 = [[], [], [], [], []]; // handCanvas2 用 (front の Y 座標を使用)
 
   // 1. 各関節の 3D 座標を設定し球体オブジェクトを生成
   for (let f = 0; f < 5; f++) {
@@ -817,31 +815,38 @@ function update3DHand() {
       const sP = sidePoints[i];
       const fP = frontPoints[i] || { x: 0, y: sP.y };
 
-      // sideのXをX軸、sideのYをY軸、frontのXをZ軸(奥行き)として合成
-      const pos = new THREE.Vector3(sP.x, sP.y, fP.x);
-      joints3D[f][i] = pos;
+      // handCanvas1: Y座標に side_img (sP.y) を使用
+      const pos1 = new THREE.Vector3(sP.x, sP.y, fP.x);
+      joints3D_1[f][i] = pos1;
 
-      // 関節（球体）作成
       const sphere1 = new THREE.Mesh(sphereGeo, sphereMat);
-      sphere1.position.copy(pos);
+      sphere1.position.copy(pos1);
       handGroup1.add(sphere1);
 
-      const sphere2 = sphere1.clone();
+      // handCanvas2: Y座標に front_img (fP.y) を使用
+      const pos2 = new THREE.Vector3(sP.x, fP.y, fP.x);
+      joints3D_2[f][i] = pos2;
+
+      const sphere2 = new THREE.Mesh(sphereGeo, sphereMat);
+      sphere2.position.copy(pos2);
       handGroup2.add(sphere2);
     }
   }
 
   // 2. 関節間を繋ぐ骨（円柱）を作成
   connections.forEach(conn => {
-    const p1 = joints3D[conn.f][conn.p1];
-    const p2 = joints3D[conn.f][conn.p2];
+    // handCanvas1 用の骨
+    const p1_1 = joints3D_1[conn.f][conn.p1];
+    const p2_1 = joints3D_1[conn.f][conn.p2];
+    if (p1_1 && p2_1) {
+      handGroup1.add(createBone(p1_1, p2_1));
+    }
 
-    if (p1 && p2) {
-      const bone1 = createBone(p1, p2);
-      handGroup1.add(bone1);
-
-      const bone2 = createBone(p1, p2);
-      handGroup2.add(bone2);
+    // handCanvas2 用の骨
+    const p1_2 = joints3D_2[conn.f][conn.p1];
+    const p2_2 = joints3D_2[conn.f][conn.p2];
+    if (p1_2 && p2_2) {
+      handGroup2.add(createBone(p1_2, p2_2));
     }
   });
 
@@ -853,17 +858,21 @@ function update3DHand() {
   ];
 
   palmConnections.forEach(conn => {
-    const p1 = joints3D[conn.f1][conn.p1];
-    const p2 = joints3D[conn.f2][conn.p2];
-    if (p1 && p2) {
-      handGroup1.add(createBone(p1, p2));
-      handGroup2.add(createBone(p1, p2));
+    // handCanvas1 用
+    const p1_1 = joints3D_1[conn.f1][conn.p1];
+    const p2_1 = joints3D_1[conn.f2][conn.p2];
+    if (p1_1 && p2_1) {
+      handGroup1.add(createBone(p1_1, p2_1));
+    }
+
+    // handCanvas2 用
+    const p1_2 = joints3D_2[conn.f1][conn.p1];
+    const p2_2 = joints3D_2[conn.f2][conn.p2];
+    if (p1_2 && p2_2) {
+      handGroup2.add(createBone(p1_2, p2_2));
     }
   });
 }
-
-// DragData のドラッグ終了時(onDragEnd)および初期化時に 3D モデルを更新
-const originalOnDragEnd = side_chart.options.plugins.dragData.onDragEnd;
 
 // チャートの設定に3D更新イベントを割り当て
 [side_chart, front_chart].forEach(chart => {
@@ -882,7 +891,6 @@ function animate() {
   requestAnimationFrame(animate);
   control1.update();
   control2.update();
-
 
   renderer1.render(scene1, camera1);
   renderer2.render(scene2, camera2);
