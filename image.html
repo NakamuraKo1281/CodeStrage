@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>課題研究</title>
+
+<link href="image.css" rel="stylesheet" type="text/css">
+
+<!-- Chart.js 本体 (ローカルファイル) -->
+<script src="lib/chart.umd.js"></script>
+<!-- chartjs-plugin-dragdata プラグイン (ローカルファイル) -->
+<script src="lib/chartjs-plugin-dragdata.min.js"></script>
+
+<!-- Three.js Import Map (ローカルファイル指定) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./lib/three.module.js",
+    "three/addons/controls/OrbitControls.js": "./lib/OrbitControls.js"
+  }
+}
+</script>
+
+
+
+</head>
+<body>
+    
+    <div class="content">
+    <!-- 画像アップロード＆表示部分 -->
+    <div id="side_c" style="flex-direction: column;">
+        <input type="file" id="side_up" accept="image/*" style="display: none;">
+        <button type="button" id="side_b">参照</button>
+        <div class="chart_c">
+            <canvas id="side_img" class="hand_img" style="background-color: gray;"></canvas>
+        </div>
+      </div>
+
+      <div id="front_c">
+        <input type="file" id="front_up" accept="image/*" style="display: none;">
+        <button type="button" id="front_b">参照</button>
+        <div class="chart_c">
+            <canvas id="front_img" class="hand_img" style="background-color: gray;"></canvas>
+        </div>
+      </div>
+
+    </div> <!--class content-->
+
+    <!-- ボタン表示 -->
+    <div class="button_box">
+      <button id="save_b" type="button">保存</button>
+      <button id="feed_b" type="button">フィードバック開始</button>
+      <button id="select_b" type="button">モデル選択</button>
+    </div>
+
+    <!-- 表 -->
+    <!-- 左側 -->
+    <div class="table_box">
+      <table class="table_l">
+        <tr>
+          <th class="sticky">部位</th>
+          <th class="sticky">長さ</th>
+          <th class="sticky">基準</th>
+        </tr>
+        <tbody class='coord_table_l'>
+          <tr>
+            <td>人差し指</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>第三～第二関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第二～第一関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第一関節～指先</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>中指</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>第三～第二関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第二～第一関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第一関節～指先</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 中央 -->
+      <table class="table_c">
+        <tr>
+          <th class="sticky">部位</th>
+          <th class="sticky">長さ</th>
+          <th class="sticky">基準</th>
+        </tr>
+        <tbody class='coord_table_c'>
+          <tr>
+            <td>薬指</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>第三～第二関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第二～第一関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第一関節～指先</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>小指</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>第三～第二関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第二～第一関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第一関節～指先</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 右 -->
+      <table class="table_r">
+        <tr>
+          <th class="sticky">部位</th>
+          <th class="sticky">長さ</th>
+          <th class="sticky">基準</th>
+        </tr>
+        <tbody class='coord_table_r'>
+          <tr>
+            <td>親指</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>第二～第一関節</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>第一関節～指先</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>その他</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>中指付け根～手首</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>親指付け根～手首</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>親指～人差し指付け根</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>小指～人差し指</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div><!--class table_box-->
+  
+    <!-- 3D手表示キャンバス -->
+    <div class="hand_3D_c">
+      <canvas id="handCanvas1"></canvas>
+      <canvas id="handCanvas2"></canvas>
+    </div>
+  
+    <!-- コメント部分 -->
+    <div class="comments">
+      <h1>コメント</h1>
+      <p>これはテストコメントです</p>
+      <p>これもテストコメントです</p>
+      <p>吾輩は猫である</p>
+    </div>
+
+    <!-- モデル選択画面 -->
+    <div id="select_model_c" class="hidden">
+      <div id="model_select_box">
+        <div id="model_select"></div>
+        <div id="closebutton">×</div>
+      </div>
+    </div>
+
+    <script type="module" src="image.js"></script>
+    <script src="table.js"></script>
+
+</body>
+</html>

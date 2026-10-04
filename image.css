@@ -1,0 +1,258 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* メインコンテンツ */
+.content {
+  background-color: #b3d874;
+  width: 100%;
+  /* height: 100%; */
+  min-height: 45vw;
+  display: flex;
+  justify-content: center;
+  gap: 4vw;
+  padding: 20px;
+}
+
+#side_c, #front_c {
+  width: 40%;
+  padding: 10px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column; /* 子要素を縦に並べる */
+  align-items: flex-start; /* 左寄せにする場合 */
+}
+
+#side_b, #front_b {
+  width: 3rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+
+.chart_c {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative; /* Chart.jsのレスポンシブ崩れ防止 */
+}
+
+.hand_img, 
+.chart_c canvas {
+  width: 100% ;
+  height: 100% ;
+  border: 6px solid #000;
+  background-color: gray;
+}
+
+.hand_img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 6px solid #000;
+  /* background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat; */
+  align-self: flex-start;
+}
+
+
+.button_box {
+    direction: rtl; /*右寄せにする*/
+    padding: 1vh;
+    /* background: #fff9cc; */
+    display: block;
+}
+
+/* 三つのボタンの幅をそろえる */
+#save_b, #feed_b, #select_b {
+  width: 15%;
+}
+
+/* 表 */
+.table_box {
+  overflow-y: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+th, td {
+  vertical-align: middle;
+  padding: 10px;
+  border: 1px solid #000;
+  color: #000;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background: #000;
+}
+
+td {
+  background: #fff;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+  border-top: none;
+}
+
+.sticky::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  background: #ccc;
+  z-index: -1;
+}
+
+/* 空部分の色の指定 */
+.empty {
+  background: #ccc;
+}
+
+.comments {
+  background-color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  padding-top: 0.05%;
+  padding-left: 2%;
+  margin-top: 1%;
+  border: 3px solid #000;   /* 枠線を追加 */
+}
+
+.hand_3D_c {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  flex-direction: row; /* 子要素を横に並べる */
+  position: relative; /* Chart.jsのレスポンシブ崩れ防止 */  
+  margin-top: 2%;
+  padding-top: 2%;
+  gap: 2.5%;
+  background-color:gray;
+}
+
+#handCanvas1,#handCanvas2 {
+  width: 45%;
+  aspect-ratio: 1 / 1;
+  border: 6px solid #000;
+  background-color: gray;
+}
+
+#chart_cont {
+  position: relative;
+  width: 60%;
+  max-width: 600px;
+  height: 600px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+
+.kugiri{
+  display: flex
+}
+
+#coordinate_list {
+  margin-top: 20px;
+}
+
+#coord_table {
+  border-collapse: collapse;
+  width: 500px;
+}
+
+#coord_table th,
+#coord_table td {
+  border: 1px solid #999;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+#coord_table th {
+  background-color: #eee;
+}
+
+#coord_table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+#select_model_c {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
+  z-index: 1000; /* 他の要素より前面に表示 */
+}
+
+.hidden{
+  display: none;
+}
+
+.active{
+  display: block;
+}
+
+#model_select_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+#model_select {
+  position: absolute;
+  width:90%;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+#closebutton {
+  position: absolute;
+  top: 0%;
+  left: 95.5%;
+  width: 4%;
+  aspect-ratio: 1/1;
+  font-size: 1.5rem;
+  font-weight: bold;
+  background-color: #ccc;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  /* ▼ 中央揃えの設定を追加 ▼ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 0; /* 行高による縦位置のズレを防止 */
+}
+#closebutton:hover{
+    background: #333;
+    border-color: #333;
+    color: #FFF;
+}
