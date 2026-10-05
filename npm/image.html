@@ -35,17 +35,23 @@
     <!-- 画像アップロード＆表示部分 -->
     <div id="side_c" style="flex-direction: column;">
         <input type="file" id="side_up" accept="image/*" style="display: none;">
+        <div  id="side_rev_c">
         <button type="button" id="side_b">参照</button>
+        <button type="button" id="side_rev" class="rev">左右反転</button>
+        </div>
         <div class="chart_c">
-            <canvas id="side_img" class="hand_img" style="background-color: gray;"></canvas>
+            <canvas id="side_img" class="hand_img"></canvas>
         </div>
       </div>
 
       <div id="front_c">
         <input type="file" id="front_up" accept="image/*" style="display: none;">
+        <div id="front_rev_c">
         <button type="button" id="front_b">参照</button>
+        <button type="button" id="front_rev" class="rev">左右反転</button>
+        </div>
         <div class="chart_c">
-            <canvas id="front_img" class="hand_img" style="background-color: gray;"></canvas>
+            <canvas id="front_img" class="hand_img" ></canvas>
         </div>
       </div>
 
