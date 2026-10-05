@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from  "three";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const ctx1 = document.getElementById("side_img").getContext("2d");
@@ -732,8 +732,8 @@ renderer2.setPixelRatio(window.devicePixelRatio);
 
 const control1 = new OrbitControls(camera1, renderer1.domElement);
 const control2 = new OrbitControls(camera2, renderer2.domElement);
-control1.enableDamping = true;
-control2.enableDamping = true;
+control1.enableDamping = false;
+control2.enableDamping = false;
 
 control1.target.set(0, 80, 0);
 control2.target.set(0, 80, 0);
