@@ -104,7 +104,7 @@ function createChartConfig(canvas_id) {
           ],
           backgroundColor: 'rgba(255, 99, 132, 0.7)',
           borderColor: 'rgb(143, 69, 85)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         },
@@ -119,7 +119,7 @@ function createChartConfig(canvas_id) {
           ],
           backgroundColor: 'rgba(255, 224, 99, 0.7)',
           borderColor: 'rgb(143, 117, 69)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         },
@@ -134,7 +134,7 @@ function createChartConfig(canvas_id) {
           ],
           backgroundColor: 'rgba(99, 133, 255, 0.7)',
           borderColor: 'rgb(69, 84, 143)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         },
@@ -145,10 +145,11 @@ function createChartConfig(canvas_id) {
             { x: 30, y: 65 },
             { x: 35, y: 80 },
             { x: 40, y: 95 },
+            {x:45,y:110}
           ],
           backgroundColor: 'rgba(99, 255, 135, 0.7)',
           borderColor: 'rgb(69, 143, 85)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         },
@@ -162,7 +163,7 @@ function createChartConfig(canvas_id) {
           ],
           backgroundColor: 'rgba(232, 99, 255, 0.7)',
           borderColor: 'rgb(143, 69, 138)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         },
@@ -174,7 +175,7 @@ function createChartConfig(canvas_id) {
           ],
           backgroundColor: 'rgba(99, 213, 255, 0.7)',
           borderColor: 'rgb(69, 131, 143)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         },
@@ -186,7 +187,7 @@ function createChartConfig(canvas_id) {
           ],
           backgroundColor: 'rgba(99, 230, 255, 0.7)',
           borderColor: 'rgb(69, 151, 143)',
-          borderWidth: 1,
+          borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 12,
         }
@@ -242,18 +243,21 @@ function createChartConfig(canvas_id) {
           min: -100,
           max: 100,
           ticks: { stepSize: 10, color: "#323232" },
-          grid: { color: "#646464" },
+          grid: { color: "#aaaaaa" },
           title: { display: true, text: 'X 軸 (単位)' }
         },
         y: {
           min: 0,
           max: 200,
           ticks: { stepSize: 10, color: "#323232" },
-          grid: { color: "#646464" },
+          grid: { color: "#aaaaaa" },
           title: { display: true, text: 'Y 軸 (単位)' }
         }
       },
       plugins: {
+        legend: {
+          display: false
+        },
         dragData: {
           round: 1,
           dragX: true,
@@ -334,6 +338,7 @@ function createChartConfig(canvas_id) {
             const chart = getCurrentChart(e);
             if (!chart) return;
 
+            // 1. 手首 (index === datum) ドラッグ終了時の座標合わせ
             if (index === datum && datasetIndex <= 4) {
               const targetX = value.x;
               const targetY = value.y;
@@ -348,6 +353,39 @@ function createChartConfig(canvas_id) {
               });
 
               chart.update('none');
+            }
+
+            // ▼ 追加：2. 付け根 (index === root) ドラッグ終了時の座標合わせ ▼
+            if (index === root) {
+              const targetX = value.x;
+              const targetY = value.y;
+
+              if (datasetIndex === finger.fore) {
+                // 人差し指付け根 -> 付け根の始点 & 第一指間腔の終点
+                const root_s = chart.data.datasets[roots].data[root_start];
+                const first_webspace_e = chart.data.datasets[first_webspace].data[first_webspace_end];
+
+                if (root_s) { root_s.x = targetX; root_s.y = targetY; }
+                if (first_webspace_e) { first_webspace_e.x = targetX; first_webspace_e.y = targetY; }
+
+                chart.update('none');
+
+              } else if (datasetIndex === finger.little) {
+                // 小指付け根 -> 付け根の終点
+                const root_e = chart.data.datasets[roots].data[root_end];
+
+                if (root_e) { root_e.x = targetX; root_e.y = targetY; }
+
+                chart.update('none');
+
+              } else if (datasetIndex === finger.thumb) {
+                // 親指付け根 -> 第一指間腔の始点
+                const first_webspace_s = chart.data.datasets[first_webspace].data[first_webspace_start];
+
+                if (first_webspace_s) { first_webspace_s.x = targetX; first_webspace_s.y = targetY; }
+
+                chart.update('none');
+              }
             }
 
             updateCoordList(chart);
@@ -764,7 +802,7 @@ const connections = [
   { f: 0, p1: 0, p2: 1 }, { f: 0, p1: 1, p2: 2 }, { f: 0, p1: 2, p2: 3 }, { f: 0, p1: 3, p2: 4 },
   { f: 1, p1: 0, p2: 1 }, { f: 1, p1: 1, p2: 2 }, { f: 1, p1: 2, p2: 3 }, { f: 1, p1: 3, p2: 4 },
   { f: 2, p1: 0, p2: 1 }, { f: 2, p1: 1, p2: 2 }, { f: 2, p1: 2, p2: 3 }, { f: 2, p1: 3, p2: 4 },
-  { f: 3, p1: 0, p2: 1 }, { f: 3, p1: 1, p2: 2 }, { f: 3, p1: 2, p2: 3 },
+  { f: 3, p1: 0, p2: 1 }, { f: 3, p1: 1, p2: 2 }, { f: 3, p1: 2, p2: 3 },{f:3,p1:3,p2:4},
   { f: 4, p1: 0, p2: 1 }, { f: 4, p1: 1, p2: 2 }, { f: 4, p1: 2, p2: 3 }
 ];
 
@@ -864,4 +902,8 @@ animate();
 const Overlay = document.getElementById("select_model_c");
 document.getElementById("select_b").addEventListener("click",() =>{
   Overlay.classList.remove("hidden");
+});
+
+document.getElementById("closebutton").addEventListener("click",()=>{
+  Overlay.classList.add("hidden");
 });
