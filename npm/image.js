@@ -506,9 +506,9 @@ const collect_length = {
   root: { f_l: 55.5, t_f: 35, d_m: 80, d_t: 70.5 }
 };
 
-function getDist(p1, p2) {
-  if (!p1 || !p2) return 0;
-  return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+function getDist(p1, p2,p3,p4) {
+  if (!p1 || !p2 || !p3 || !p4) return 0;
+  return Math.hypot(p1.x - p2.x, p1.y - p2.y,p3.x - p4.x);
 }
 
 const button_click_event = document.getElementById('feed_b');
@@ -520,45 +520,55 @@ if (button_click_event) {
       return;
     }
 
-    const datasets = side_chart.data.datasets;
-    const fore = datasets[0].data;
-    const middle = datasets[1].data;
-    const third = datasets[2].data;
-    const little = datasets[3].data;
-    const thumb = datasets[4].data;
-    const rootData = datasets[5].data;
-    const webspace = datasets[6].data;
+    const side_datasets = side_chart.data.datasets;
+    const side_fore = side_datasets[0].data;
+    const side_middle = side_datasets[1].data;
+    const side_third = side_datasets[2].data;
+    const side_little = side_datasets[3].data;
+    const side_thumb = side_datasets[4].data;
+    const side_rootData = side_datasets[5].data;
+    const side_webspace = side_datasets[6].data;
+
+    const front_datasets = front_chart.data.datasets;
+    const front_fore = front_datasets[0].data;
+    const front_middle = front_datasets[1].data;
+    const front_third = front_datasets[2].data;
+    const front_little = front_datasets[3].data;
+    const front_thumb = front_datasets[4].data;
+    const front_rootData = front_datasets[5].data;
+    const front_webspace = front_datasets[6].data;
+    
 
     const length = {
       fore: {
-        third_second: getDist(fore[1], fore[2]),
-        second_first: getDist(fore[2], fore[3]),
-        first_tip: getDist(fore[3], fore[4])
+        third_second: getDist(side_fore[1], side_fore[2],front_fore[1], front_fore[2]),
+        second_first: getDist(side_fore[2], side_fore[3],front_fore[2], front_fore[3]),
+        first_tip: getDist(side_fore[3], side_fore[4],front_fore[3], front_fore[4])
       },
       middle: {
-        third_second: getDist(middle[1], middle[2]),
-        second_first: getDist(middle[2], middle[3]),
-        first_tip: getDist(middle[3], middle[4])
+        third_second: getDist(side_middle[1], side_middle[2],front_middle[1], front_middle[2]),
+        second_first: getDist(side_middle[2], side_middle[3],front_middle[2], front_middle[3]),
+        first_tip: getDist(side_middle[3], side_middle[4],front_middle[3], front_middle[4])
       },
       third: {
-        third_second: getDist(third[1], third[2]),
-        second_first: getDist(third[2], third[3]),
-        first_tip: getDist(third[3], third[4])
+        third_second: getDist(side_third[1], side_third[2],front_third[1], front_third[2]),
+        second_first: getDist(side_third[2], side_third[3],front_third[2], front_third[3]),
+        first_tip: getDist(side_third[3], side_third[4],front_third[3], front_third[4])
       },
       little: {
-        third_second: getDist(little[1], little[2]),
-        second_first: getDist(little[2], little[3]),
-        first_tip: getDist(little[3], little[4])
+        third_second: getDist(side_little[1], side_little[2],front_little[1], front_little[2]),
+        second_first: getDist(side_little[2], side_little[3],front_little[2], front_little[3]),
+        first_tip: getDist(side_little[3], side_little[4],front_little[3], front_little[4])
       },
       thumb: {
-        second_first: getDist(thumb[1], thumb[2]),
-        first_tip: getDist(thumb[2], thumb[3])
+        second_first: getDist(side_thumb[1], side_thumb[2],front_thumb[1], front_thumb[2]),
+        first_tip: getDist(side_thumb[2], side_thumb[3],front_thumb[2], front_thumb[3])
       },
       root: {
-        fore_little: getDist(fore[1], little[1]),
-        thumb_fore: getDist(webspace[0], webspace[1]),
-        datum_middle: getDist(middle[0], middle[1]),
-        datum_thumb: getDist(thumb[0], thumb[1])
+        fore_little: getDist(side_fore[1], side_little[1],front_fore[1], front_little[1]),
+        thumb_fore: getDist(side_webspace[0], side_webspace[1],front_webspace[0], front_webspace[1]),
+        datum_middle: getDist(side_middle[0], side_middle[1],front_middle[0], front_middle[1]),
+        datum_thumb: getDist(side_thumb[0], side_thumb[1],front_thumb[0], front_thumb[1])
       }
     };
 
@@ -899,11 +909,75 @@ function animate() {
 
 animate();
 
-const Overlay = document.getElementById("select_model_c");
-document.getElementById("select_b").addEventListener("click",() =>{
-  Overlay.classList.remove("hidden");
-});
+// モーダルウィンドウ表示・非表示の処理
+const selectModal = document.getElementById("select_model_c");
+const selectBtn = document.getElementById("select_b");
+const closeBtn = document.getElementById("closebutton");
 
-document.getElementById("closebutton").addEventListener("click",()=>{
-  Overlay.classList.add("hidden");
-});
+// モデル選択画面を開く
+if (selectBtn && selectModal) {
+  selectBtn.addEventListener("click", () => {
+    selectModal.showModal(); // ★ showModal() を使用
+  });
+}
+
+// 閉じるボタンで閉じる
+if (closeBtn && selectModal) {
+  closeBtn.addEventListener("click", () => {
+    selectModal.close(); // ★ close() を使用
+  });
+}
+
+// （オプション）背景（ダイアログの外側の余白部分）をクリックしたときに閉じる
+if (selectModal) {
+  selectModal.addEventListener("click", (event) => {
+    const rect = selectModal.getBoundingClientRect();
+    const isInDialog = 
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+    
+    if (!isInDialog) {
+      selectModal.close();
+    }
+  });
+}
+
+// ==========================================
+// 左右反転ボタンの処理
+// ==========================================
+const sideRevBtn = document.getElementById("side_rev");
+const frontRevBtn = document.getElementById("front_rev");
+
+// グラフのx座標をすべて反転する関数
+function reverseChartX(chart) {
+  if (!chart || !chart.data) return;
+
+  // 各データセットのすべての点の x 座標に -1 を掛ける
+  chart.data.datasets.forEach(dataset => {
+    dataset.data.forEach(p => {
+      p.x = -p.x;
+    });
+  });
+
+  // グラフを再描画
+  chart.update();
+
+  // 3D側の表示も連動して更新
+  update3DHand();
+}
+
+// 側面チャート（side_chart）の反転ボタン
+if (sideRevBtn) {
+  sideRevBtn.addEventListener("click", () => {
+    reverseChartX(side_chart);
+  });
+}
+
+// 正面チャート（front_chart）の反転ボタン
+if (frontRevBtn) {
+  frontRevBtn.addEventListener("click", () => {
+    reverseChartX(front_chart);
+  });
+}
