@@ -209,61 +209,100 @@ td {
   background-color: #f5f5f5;
 }
 
-#select_model_c {
+/* dialogタグがモーダルとして開かれたときのスタイル */
+/* dialogタグがモーダルとして開かれたときのスタイル */
+dialog:modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
-  z-index: 1000; /* 他の要素より前面に表示 */
+  inset: 0;              /* 上下左右の隙間をなくして画面全体を基準にする */
+  margin: auto;          /* marginをautoにすることで、flexを使わなくても完全な中央に配置される */
+  width: 80%;
+  max-width: 800px;
+  height: 80vh;
+  background-color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  
+  /* 表示時のアニメーション */
+  animation: fadeIn 0.3s ease;
 }
 
-.hidden{
-  display: none;
+
+/* モーダルの背景（backdrop）のスタイリング */
+dialog:modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeInBackdrop 0.3s ease;
 }
 
-.active{
-  display: block;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 不要になった .hidden, .active は削除して構いません */
 
 #model_select_box {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 #model_select {
-  position: absolute;
-  width:90%;
-  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  height: calc(100% - 40px);
   background-color: #fff;
-  border-radius: 8px;
+  padding: 10px;
+  gap: 10px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.model-item {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 1px solid black;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  object-fit: cover;
 }
 
 #closebutton {
   position: absolute;
-  top: 0%;
-  left: 95.5%;
-  width: 4%;
-  aspect-ratio: 1/1;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
   font-size: 1.5rem;
   font-weight: bold;
   background-color: #ccc;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-
-  /* ▼ 中央揃えの設定を追加 ▼ */
   display: flex;
   justify-content: center;
   align-items: center;
-  line-height: 0; /* 行高による縦位置のズレを防止 */
 }
-#closebutton:hover{
-    background: #333;
-    border-color: #333;
-    color: #FFF;
+
+#closebutton:hover {
+  background: #333;
+  border-color: #333;
+  color: #FFF;
 }
