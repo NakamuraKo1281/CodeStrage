@@ -18,8 +18,6 @@ front_b.addEventListener("click", () => {
 });
 
 // 背景画像保持用オブジェクト
-// const bgImages = {};
-// 変更後：windowに持たせることで他のファイルからも参照できるようにする
 window.bgImages = {};
 
 function Fileupload(hand_up, canvas_id, chartInstance) {
@@ -50,6 +48,7 @@ function Fileupload(hand_up, canvas_id, chartInstance) {
 // ドラッグ移動量計算用の変数
 let dragStartX = 0;
 let dragStartY = 0;
+let activeChart =null;
 
 const finger = {
   fore: 0,   // 人差し指
@@ -89,7 +88,6 @@ function getCurrentChart(e) {
   return null;
 }
 
-
 const bgLabels = {
   side_img: '側面',
   front_img: '正面'
@@ -114,6 +112,7 @@ const bgTextPlugin = {
 
 // 設定生成用の関数（canvas_idを受け取る）
 function createChartConfig(canvas_id) {
+  const getThisChart = () => (canvas_id === "side_img" ? side_chart : front_chart);
   return {
     type: 'line',
     data: {
@@ -170,7 +169,7 @@ function createChartConfig(canvas_id) {
             { x: 30, y: 65 },
             { x: 35, y: 80 },
             { x: 40, y: 95 },
-            {x:45,y:110}
+            { x: 45, y: 110 }
           ],
           backgroundColor: 'rgba(99, 255, 135, 0.7)',
           borderColor: 'rgb(69, 143, 85)',
@@ -283,7 +282,7 @@ function createChartConfig(canvas_id) {
         legend: {
           display: false
         },
-        bgText: {                       // ← 追加
+        bgText: {
           text: bgLabels[canvas_id],
           alpha: 0.15,
           color: '#000',
@@ -298,12 +297,25 @@ function createChartConfig(canvas_id) {
           onDragStart: function (e, datasetIndex, index, value) {
             dragStartX = value.x;
             dragStartY = value.y;
+            activeChart = getThisChart();
             if (e.target) e.target.style.cursor = 'grabbing';
           },
 
           onDrag: function (e, datasetIndex, index, value) {
-            const chart = getCurrentChart(e);
+            const chart = activeChart;
             if (!chart) return;
+
+            // チャートの外にカーソルが出ても値が暴走しないよう、軸の範囲内に制限する
+            const xScale = chart.scales.x;
+            const yScale = chart.scales.y;
+            value.x = Math.max(xScale.min, Math.min(xScale.max, value.x));
+            value.y = Math.max(yScale.min, Math.min(yScale.max, value.y));
+
+            const expectedCanvasId = chart === side_chart ? "side_img" : "front_img";
+            const currentCanvas = e.target || (e.native && e.native.target);
+            if (currentCanvas && currentCanvas.id && currentCanvas.id !== expectedCanvasId) {
+              return;
+            }
 
             const dx = value.x - dragStartX;
             const dy = value.y - dragStartY;
@@ -349,16 +361,14 @@ function createChartConfig(canvas_id) {
               chart.update('none');
             }
 
-            // ▼ 追加：3. 付け根の線 (roots) ドラッグ時の連動 ▼
+            // 3. 付け根の線 (roots) ドラッグ時の連動
             if (datasetIndex === roots) {
               if (index === root_start) {
-                // 付け根の始点 ＝ 人差し指の付け根
                 const foreRoot = chart.data.datasets[finger.fore].data[1];
                 const webEnd = chart.data.datasets[first_webspace].data[first_webspace_end];
                 if (foreRoot) { foreRoot.x += dx; foreRoot.y += dy; }
                 if (webEnd) { webEnd.x += dx; webEnd.y += dy; }
               } else if (index === root_end) {
-                // 付け根の終点 ＝ 小指の付け根
                 const littleRoot = chart.data.datasets[finger.little].data[1];
                 if (littleRoot) { littleRoot.x += dx; littleRoot.y += dy; }
               }
@@ -367,14 +377,12 @@ function createChartConfig(canvas_id) {
               chart.update('none');
             }
 
-            // ▼ 追加：4. 第一指間腔の線 (first_webspace) ドラッグ時の連動 ▼
+            // 4. 第一指間腔の線 (first_webspace) ドラッグ時の連動
             if (datasetIndex === first_webspace) {
               if (index === first_webspace_start) {
-                // 第一指間腔の始点 ＝ 親指の付け根
                 const thumbRoot = chart.data.datasets[finger.thumb].data[1];
                 if (thumbRoot) { thumbRoot.x += dx; thumbRoot.y += dy; }
               } else if (index === first_webspace_end) {
-                // 第一指間腔の終点 ＝ 人差し指の付け根 ＆ 付け根線の始点
                 const foreRoot = chart.data.datasets[finger.fore].data[1];
                 const rootStartP = chart.data.datasets[roots].data[root_start];
                 if (foreRoot) { foreRoot.x += dx; foreRoot.y += dy; }
@@ -389,9 +397,15 @@ function createChartConfig(canvas_id) {
           onDragEnd: function (e, datasetIndex, index, value) {
             if (e.target) e.target.style.cursor = 'default';
 
-            const chart = getCurrentChart(e);
+            const chart = activeChart;
             if (!chart) return;
 
+            const expectedCanvasId = chart === side_chart ? "side_img" : "front_img";
+            const currentCanvas = e.target || (e.native && e.native.target);
+            if (currentCanvas && currentCanvas.id && currentCanvas.id !== expectedCanvasId) {
+              return;
+            }
+            
             // 1. 手首 ドラッグ終了時の座標合わせ
             if (index === datum && datasetIndex <= 4) {
               const targetX = value.x;
@@ -433,7 +447,7 @@ function createChartConfig(canvas_id) {
               chart.update('none');
             }
 
-            // ▼ 追加：3. 付け根の線 (roots) ドラッグ終了時の座標合わせ ▼
+            // 3. 付け根の線 (roots) ドラッグ終了時の座標合わせ
             if (datasetIndex === roots) {
               const targetX = value.x;
               const targetY = value.y;
@@ -450,7 +464,7 @@ function createChartConfig(canvas_id) {
               chart.update('none');
             }
 
-            // ▼ 追加：4. 第一指間腔の線 (first_webspace) ドラッグ終了時の座標合わせ ▼
+            // 4. 第一指間腔の線 (first_webspace) ドラッグ終了時の座標合わせ
             if (datasetIndex === first_webspace) {
               const targetX = value.x;
               const targetY = value.y;
@@ -468,6 +482,7 @@ function createChartConfig(canvas_id) {
             }
 
             updateCoordList(chart);
+            activeChart = null;
           },
 
           onHover: function (e) {
@@ -510,6 +525,31 @@ function createChartConfig(canvas_id) {
 const side_chart = new Chart(ctx1, createChartConfig("side_img"));
 const front_chart = new Chart(ctx2, createChartConfig("front_img"));
 
+// チャートの外（pointerleave）に出たときに安全にドラッグを終了させる
+[ctx1.canvas, ctx2.canvas].forEach(canvas => {
+  canvas.addEventListener('pointerdown', (e) => {
+    try {
+      canvas.setPointerCapture(e.pointerId);
+    } catch (err) {}
+  });
+
+  canvas.addEventListener('pointerleave', (e) => {
+    try {
+      if (canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+    } catch (err) {}
+  });
+
+  canvas.addEventListener('pointerup', (e) => {
+    try {
+      if (canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+    } catch (err) {}
+  });
+});
+
 // イベントリスナー登録
 side_up.addEventListener("change", () => {
   Fileupload(side_up, "side_img", side_chart);
@@ -518,12 +558,6 @@ side_up.addEventListener("change", () => {
 front_up.addEventListener("change", () => {
   Fileupload(front_up, "front_img", front_chart);
 });
-
-// const BUTTON_CLICK_EVENT = document.getElementById('feed_b');
-// if (BUTTON_CLICK_EVENT) {
-//   BUTTON_CLICK_EVENT.addEventListener('click', () => {
-//   });
-// }
 
 function getFingerCoord(targetChart) {
   const chartInstance = targetChart || side_chart;
@@ -585,14 +619,14 @@ const collect_length = {
   root: { f_l: 100, t_f: 80, d_m: 145, d_t: 92 }
 };
 
-function getDist(p1, p2) {
-  if (!p1 || !p2) return 0;
-  return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+function getDist(p1, p2,p3,p4) {
+  if (!p1 || !p2||!p3||!4) return 0;
+  return Math.hypot(p1.x - p2.x, p1.y - p2.y, p3.x - p4.x );
 }
 
 const button_click_event = document.getElementById('feed_b');
 
-//フィドバボタン感知
+//フィードバックボタン感知
 if (button_click_event) {
   button_click_event.addEventListener('click', () => {
     if (typeof side_chart === 'undefined' || !side_chart.data) {
@@ -600,79 +634,69 @@ if (button_click_event) {
       return;
     }
 
-    const datasets = front_chart.data.datasets; //省略用
+    const front_datasets = front_chart.data.datasets;
+    const side_datasets = side_chart.data.datasets;
 
-    const fore = datasets[0].data;
-    const middle = datasets[1].data;
-    const third = datasets[2].data;
-    const little = datasets[3].data;
-    const thumb = datasets[4].data;
-    const rootData = datasets[5].data;
-    const webspace = datasets[6].data;
+    const front_fore = front_datasets[0].data;
+    const front_middle = front_datasets[1].data;
+    const front_third = front_datasets[2].data;
+    const front_little = front_datasets[3].data;
+    const front_thumb = front_datasets[4].data;
+    const frotn_rootData = front_datasets[5].data;
+    const front_webspace = front_datasets[6].data;
 
-    //グラフにおける関節間の長さ
+    const side_fore = side_datasets[0].data;
+    const side_middle = side_datasets[1].data;
+    const side_third = side_datasets[2].data;
+    const side_little = side_datasets[3].data;
+    const side_thumb = side_datasets[4].data;
+    const side_rootData = side_datasets[5].data;
+    const side_webspace = side_datasets[6].data;
+
+
     const length = {
       fore: {
-        third_second: getDist(fore[1], fore[2]),
-        second_first: getDist(fore[2], fore[3]),
-        first_tip: getDist(fore[3], fore[4])
+        third_second: getDist(front_fore[1], front_fore[2],side_fore[1],side_fore[2]),
+        second_first: getDist(front_fore[2], front_fore[3],side_fore[2],side_fore[3]),
+        first_tip: getDist(front_fore[3], front_fore[4],side_fore[3],side_fore[4])
       },
       middle: {
-        third_second: getDist(middle[1], middle[2]),
-        second_first: getDist(middle[2], middle[3]),
-        first_tip: getDist(middle[3], middle[4])
+        third_second: getDist(front_middle[1], front_middle[2],side_middle[1],side_middle[2]),
+        second_first: getDist(front_middle[2], front_middle[3],side_middle[2],side_middle[3]),
+        first_tip: getDist(front_middle[3], front_middle[4],side_middle[3],side_middle[4])
       },
       third: {
-        third_second: getDist(third[1], third[2]),
-        second_first: getDist(third[2], third[3]),
-        first_tip: getDist(third[3], third[4])
+        third_second: getDist(front_third[1], front_third[2],side_third[1],side_third[2]),
+        second_first: getDist(front_third[2], front_third[3],side_third[2],side_third[3]),
+        first_tip: getDist(front_third[3], front_third[4],side_third[3],side_third[4])
       },
       little: {
-        third_second: getDist(little[1], little[2]),
-        second_first: getDist(little[2], little[3]),
-        first_tip: getDist(little[3], little[4])
+        third_second: getDist(front_little[1], front_little[2],side_little[1],side_little[2]),
+        second_first: getDist(front_little[2], front_little[3],side_little[2],side_little[3]),
+        first_tip: getDist(front_little[3], front_little[4],side_little[3],side_little[4])
       },
       thumb: {
-        second_first: getDist(thumb[1], thumb[2]),
-        first_tip: getDist(thumb[2], thumb[3])
+        second_first: getDist(front_thumb[1], front_thumb[2],side_thumb[1],side_thumb[2]),
+        first_tip: getDist(front_thumb[2], front_thumb[3],side_thumb[2],side_thumb[3])
       },
       root: {
-        fore_little: getDist(fore[1], little[1]),
-        thumb_fore: getDist(webspace[0], webspace[1]),
-        datum_middle: getDist(middle[0], middle[1]),
-        datum_thumb: getDist(thumb[0], thumb[1])
+        fore_little: getDist(front_fore[1], front_little[1],side_fore[1],side_little[1]),
+        thumb_fore: getDist(front_webspace[0], front_webspace[1],side_webspace[0],side_webspace[1]),
+        datum_middle: getDist(front_middle[0], front_middle[1],side_webspace[0],side_webspace[1]),
+        datum_thumb: getDist(front_thumb[0], front_thumb[1],side_thumb[0],side_thumb[1])
       }
     };
     
-    /////////////////////////////////////////////////////////////////////主な変更場所↓↓
-    //特定の部位を基準にして割合を出す
+    let d_part = length.root.fore_little;
 
-    //基準とする部位をすぐに変えられるように変数で管理
-    let d_part = length.root.fore_little //d_part : datum_part（基準部位）の意
-
-    //基準に対する割合を出す
     function getColl(len){
-      // return (len / length.root.fore_little) * 100
-      return Math.round((len / d_part)*1000) / 10
+      return Math.round((len / d_part)*1000) / 10;
     }
 
-  // 実測の割合(%) と 理想の割合(%) の差
-  function getDiff(len, std){ //Diff : different(違い)の意
-    return Math.round((getColl(len) - std) * 10) / 10
+    function getDiff(len, std){
+      return Math.round((getColl(len) - std) * 10) / 10;
+    }
 
-  // function getDiff(len, std){ //Diff : different(違い)の意
-  //   return Math.round((getColl(len) - std) * 10) / 10
-}
-
-    console.log(getDiff(length.root.thumb_fore, collect_length.root.t_f), length.root.thumb_fore, collect_length.root.t_f)
-
-    // console.log(Math.round((getColl(length.fore.second_first)-collect_length.joint.fore.s_f)*10)/10)
-
-    //これを表に埋め込む（予定）
-    // console.log(getDiff(length.fore.second_first, collect_length.joint.fore.s_f))
-
-
-    //日本語表示用
     const t_name_l = {
       finger: { fore: '人差し指', middle: '中指' },
       joint: {
@@ -705,56 +729,47 @@ if (button_click_event) {
       }
     };
 
+    const j_keys_lc = [
+      ['third_second', 't_s'],
+      ['second_first', 's_f'],
+      ['first_tip',    'f_t']
+    ];
 
-  
-  //変換用  
-  const j_keys_lc = [ //joint_key_left&centerの意
-  ['third_second', 't_s'],
-  ['second_first', 's_f'],
-  ['first_tip',    'f_t']
-];
+    const make_t_l = (finger) => `
+      <tr>
+        <td>${t_name_l.finger[finger]}</td>
+        <td class="empty"></td>
+        <td class="empty"></td>
+      </tr>
+      ${j_keys_lc.map(([long, short]) => `
+      <tr>
+        <td>${t_name_l.joint[long]}</td>
+        <td>${getDiff(length[finger][long], collect_length.joint[finger][short])}</td>
+        <td>${collect_length.joint[finger][short]}</td>
+      </tr>`).join('')}`;
 
-// 指1本分の行(見出し行＋関節3行)を作る
-//make_table_leftの意
-const make_t_l = (finger) => `
-  <tr>
-    <td>${t_name_l.finger[finger]}</td>
-    <td class="empty"></td>
-    <td class="empty"></td>
-  </tr>
-  ${j_keys_lc.map(([long, short]) => `
-  <tr>
-    <td>${t_name_l.joint[long]}</td>
-    <td>${getDiff(length[finger][long], collect_length.joint[finger][short])}</td>
-    <td>${collect_length.joint[finger][short]}</td>
-  </tr>`).join('')}`;
+    const table_l = document.querySelector('.coord_table_l');
+    if (table_l) {
+      table_l.innerHTML = ['fore', 'middle'].map(make_t_l).join('');
+    }
 
-const table_l = document.querySelector('.coord_table_l');
-if (table_l) {
-  table_l.innerHTML = ['fore', 'middle'].map(make_t_l).join('');
-}
+    const make_t_c = (finger) => `
+      <tr>
+        <td>${t_name_c.finger[finger]}</td>
+        <td class="empty"></td>
+        <td class="empty"></td>
+      </tr>
+      ${j_keys_lc.map(([long, short]) => `
+      <tr>
+        <td>${t_name_c.joint[long]}</td>
+        <td>${getDiff(length[finger][long], collect_length.joint[finger][short])}</td>
+        <td>${collect_length.joint[finger][short]}</td>
+      </tr>`).join('')}`;
 
-
-
-const make_t_c = (finger) => `
-  <tr>
-    <td>${t_name_c.finger[finger]}</td>
-    <td class="empty"></td>
-    <td class="empty"></td>
-  </tr>
-  ${j_keys_lc.map(([long, short]) => `
-  <tr>
-    <td>${t_name_c.joint[long]}</td>
-    <td>${getDiff(length[finger][long], collect_length.joint[finger][short])}</td>
-    <td>${collect_length.joint[finger][short]}</td>
-  </tr>`).join('')}`;
-
-const table_c = document.querySelector('.coord_table_c');
-if (table_c) {
-  table_c.innerHTML = ['third', 'little'].map(make_t_c).join('');
-}
-
-
+    const table_c = document.querySelector('.coord_table_c');
+    if (table_c) {
+      table_c.innerHTML = ['third', 'little'].map(make_t_c).join('');
+    }
 
     const table_r = document.querySelector('.coord_table_r');
     if (table_r) {
@@ -775,7 +790,6 @@ if (table_c) {
           <td>${getDiff(length.thumb.first_tip, collect_length.joint.thumb.f_t)}</td>
           <td>${collect_length.joint.thumb.f_t}</td>
         </tr>
-
         <tr>
           <td>その他</td>
           <td class="empty"></td>
@@ -801,8 +815,6 @@ if (table_c) {
           <td>${getDiff(length.root.fore_little, collect_length.root.f_l)}</td>
           <td>${collect_length.root.f_l}</td>
         </tr>
-        
-        
       `);
     }
   });
@@ -967,19 +979,6 @@ function animate() {
 
 animate();
 
-
-// const checkbox = document.getElementById('clr_rev');
-
-// checkbox.addEventListener('change', (e) => {
-//   if (e.target.checked) {
-//     handCanvas1.style = 'background-color:#FFFFFF;'
-//     handCanvas2.style = 'background-color:#FFFFFF;'
-//   } else {
-//     handCanvas1.style = 'background-color:#000000;'
-//     handCanvas2.style = 'background-color:#000000;'
-//   }
-// });
-
 const Overlay = document.getElementById("select_model_c");
 document.getElementById("select_b").addEventListener("click",() =>{
   Overlay.classList.remove("hidden");
@@ -989,43 +988,33 @@ document.getElementById("closebutton").addEventListener("click",()=>{
   Overlay.classList.add("hidden");
 });
 
-
-
 // ==========================================
 // 左右反転ボタンの処理
 // ==========================================
 const sideRevBtn = document.getElementById("side_rev");
 const frontRevBtn = document.getElementById("front_rev");
 
-// グラフのx座標をすべて反転する関数
 function reverseChartX(chart) {
   if (!chart || !chart.data) return;
 
-  // 各データセットのすべての点の x 座標に -1 を掛ける
   chart.data.datasets.forEach(dataset => {
     dataset.data.forEach(p => {
       p.x = -p.x;
     });
   });
 
-  // グラフを再描画
   chart.update();
-
-  // 3D側の表示も連動して更新
   update3DHand();
 }
 
-// 側面チャート（side_chart）の反転ボタン
 if (sideRevBtn) {
   sideRevBtn.addEventListener("click", () => {
     reverseChartX(side_chart);
   });
 }
 
-// 正面チャート（front_chart）の反転ボタン
 if (frontRevBtn) {
   frontRevBtn.addEventListener("click", () => {
     reverseChartX(front_chart);
   });
 }
-
