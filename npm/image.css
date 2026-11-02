@@ -233,7 +233,6 @@ td:not(.empty):hover {
   align-items: center;
   flex-direction: row; /* 子要素を横に並べる */
   position: relative; /* Chart.jsのレスポンシブ崩れ防止 */  
-  margin-top: 2%;
   padding-top: 2%;
   gap: 2.5%;
   /* background-color:gray; */
@@ -384,12 +383,13 @@ dialog:modal::backdrop {
 
 /* チャートの上の選択モデル表示エリアの間隔をメインと合わせる */
 #current_selected_pair {
-  width:100%;
+  /* background-color: #b3d874; */
+  width: 95%;
+  /* height: 100%; */
   display: flex;
-  gap: 12.5%; /* メインの .content と同じ間隔にする */
-  padding-left: 12.5%;
   justify-content: center;
-  align-items: center;
+  gap: 3vw;
+  padding-left: 2.5%;
 }
 
 
@@ -403,6 +403,8 @@ dialog:modal::backdrop {
   text-align: center;
   cursor: pointer;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
 }
 
 #closebutton {
