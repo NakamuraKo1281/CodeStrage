@@ -93,20 +93,7 @@ if (applySelectBtn) {
       <img src="${frontSrc}" alt="正面モデル">
     `;
 
-    // B. チャートの背景画像（bgImages）に反映して再描画する
-    const sideImgObj = new Image();
-    sideImgObj.src = sideSrc;
-    sideImgObj.onload = () => {
-      bgImages["side_img"] = sideImgObj;
-      if (typeof side_chart !== "undefined") side_chart.update();
-    };
-
-    const frontImgObj = new Image();
-    frontImgObj.src = frontSrc;
-    frontImgObj.onload = () => {
-      bgImages["front_img"] = frontImgObj;
-      if (typeof front_chart !== "undefined") front_chart.update();
-    };
+ 
 
     // C. 3D手表示なども連動させる場合
     if (typeof update3DHand === "function") {
