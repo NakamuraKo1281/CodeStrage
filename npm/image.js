@@ -48,7 +48,7 @@ function Fileupload(hand_up, canvas_id, chartInstance) {
 // ドラッグ移動量計算用の変数
 let dragStartX = 0;
 let dragStartY = 0;
-let activeChart =null;
+let activeChart = null;
 
 const finger = {
   fore: 0,   // 人差し指
@@ -105,7 +105,7 @@ const bgTextPlugin = {
     ctx.font = opts.font ?? 'bold 64px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(opts.text, (left + right)/ 1.3, (top + bottom)/ 8);
+    ctx.fillText(opts.text, (left + right) / 1.3, (top + bottom) / 8);
     ctx.restore();
   }
 };
@@ -405,7 +405,7 @@ function createChartConfig(canvas_id) {
             if (currentCanvas && currentCanvas.id && currentCanvas.id !== expectedCanvasId) {
               return;
             }
-            
+
             // 1. 手首 ドラッグ終了時の座標合わせ
             if (index === datum && datasetIndex <= 4) {
               const targetX = value.x;
@@ -501,11 +501,11 @@ function createChartConfig(canvas_id) {
 
               if (key && jointNamesMap[key]) {
                 const jointName = jointNamesMap[key][dataIndex] || `点${dataIndex}`;
-                
+
                 if (dataIndex === datum) {
                   return '手首';
                 }
-                
+
                 return `${datasetLabel} (${jointName})`;
               }
 
@@ -592,9 +592,9 @@ function updateCoordList(targetChart) {
     fingerItem.points.forEach((point, index) => {
       const row = document.createElement('tr');
       const pointLabel = (names && names[index]) ? names[index] : `P${index}`;
-      
+
       const displayName = (index === datum) ? '-' : fingerItem.name;
-      
+
       row.innerHTML = `
         <td>${displayName}</td>
         <td>${pointLabel}</td>
@@ -619,9 +619,9 @@ const collect_length = {
   root: { f_l: 100, t_f: 80, d_m: 145, d_t: 92 }
 };
 
-function getDist(p1, p2,p3,p4) {
-  if (!p1 || !p2||!p3||!4) return 0;
-  return Math.hypot(p1.x - p2.x, p1.y - p2.y, p3.x - p4.x );
+function getDist(p1, p2, p3, p4) {
+  if (!p1 || !p2 || !p3 || !p4) return 0;
+  return Math.hypot(p1.x - p2.x, p1.y - p2.y, p3.x - p4.x);
 }
 
 const button_click_event = document.getElementById('feed_b');
@@ -642,7 +642,6 @@ if (button_click_event) {
     const front_third = front_datasets[2].data;
     const front_little = front_datasets[3].data;
     const front_thumb = front_datasets[4].data;
-    const frotn_rootData = front_datasets[5].data;
     const front_webspace = front_datasets[6].data;
 
     const side_fore = side_datasets[0].data;
@@ -650,51 +649,56 @@ if (button_click_event) {
     const side_third = side_datasets[2].data;
     const side_little = side_datasets[3].data;
     const side_thumb = side_datasets[4].data;
-    const side_rootData = side_datasets[5].data;
     const side_webspace = side_datasets[6].data;
-
 
     const length = {
       fore: {
-        third_second: getDist(front_fore[1], front_fore[2],side_fore[1],side_fore[2]),
-        second_first: getDist(front_fore[2], front_fore[3],side_fore[2],side_fore[3]),
-        first_tip: getDist(front_fore[3], front_fore[4],side_fore[3],side_fore[4])
+        third_second: getDist(front_fore[1], front_fore[2], side_fore[1], side_fore[2]),
+        second_first: getDist(front_fore[2], front_fore[3], side_fore[2], side_fore[3]),
+        first_tip:    getDist(front_fore[3], front_fore[4], side_fore[3], side_fore[4])
       },
       middle: {
-        third_second: getDist(front_middle[1], front_middle[2],side_middle[1],side_middle[2]),
-        second_first: getDist(front_middle[2], front_middle[3],side_middle[2],side_middle[3]),
-        first_tip: getDist(front_middle[3], front_middle[4],side_middle[3],side_middle[4])
+        third_second: getDist(front_middle[1], front_middle[2], side_middle[1], side_middle[2]),
+        second_first: getDist(front_middle[2], front_middle[3], side_middle[2], side_middle[3]),
+        first_tip:    getDist(front_middle[3], front_middle[4], side_middle[3], side_middle[4])
       },
       third: {
-        third_second: getDist(front_third[1], front_third[2],side_third[1],side_third[2]),
-        second_first: getDist(front_third[2], front_third[3],side_third[2],side_third[3]),
-        first_tip: getDist(front_third[3], front_third[4],side_third[3],side_third[4])
+        third_second: getDist(front_third[1], front_third[2], side_third[1], side_third[2]),
+        second_first: getDist(front_third[2], front_third[3], side_third[2], side_third[3]),
+        first_tip:    getDist(front_third[3], front_third[4], side_third[3], side_third[4])
       },
       little: {
-        third_second: getDist(front_little[1], front_little[2],side_little[1],side_little[2]),
-        second_first: getDist(front_little[2], front_little[3],side_little[2],side_little[3]),
-        first_tip: getDist(front_little[3], front_little[4],side_little[3],side_little[4])
+        third_second: getDist(front_little[1], front_little[2], side_little[1], side_little[2]),
+        second_first: getDist(front_little[2], front_little[3], side_little[2], side_little[3]),
+        first_tip:    getDist(front_little[3], front_little[4], side_little[3], side_little[4])
       },
       thumb: {
-        second_first: getDist(front_thumb[1], front_thumb[2],side_thumb[1],side_thumb[2]),
-        first_tip: getDist(front_thumb[2], front_thumb[3],side_thumb[2],side_thumb[3])
+        second_first: getDist(front_thumb[1], front_thumb[2], side_thumb[1], side_thumb[2]),
+        first_tip:    getDist(front_thumb[2], front_thumb[3], side_thumb[2], side_thumb[3])
       },
       root: {
-        fore_little: getDist(front_fore[1], front_little[1],side_fore[1],side_little[1]),
-        thumb_fore: getDist(front_webspace[0], front_webspace[1],side_webspace[0],side_webspace[1]),
-        datum_middle: getDist(front_middle[0], front_middle[1],side_webspace[0],side_webspace[1]),
-        datum_thumb: getDist(front_thumb[0], front_thumb[1],side_thumb[0],side_thumb[1])
+        fore_little:    getDist(front_fore[1], front_little[1], side_fore[1], side_little[1]),            // 人差し指付け根、小指付け根
+        thumb_fore:     getDist(front_webspace[0], front_webspace[1], side_webspace[0], side_webspace[1]), // 第一指間腔
+        datum_middle_r: getDist(front_middle[0], front_middle[1], side_middle[0], side_middle[1]),        // 手首～中指付け根
+        datum_middle_t: getDist(front_middle[0], front_middle[4], side_middle[0], side_middle[4]),        // 手首～中指先端
+        datum_thumb:    getDist(front_thumb[0], front_thumb[1], side_thumb[0], side_thumb[1])              // 手首、親指付け根
       }
     };
-    
-    let d_part = length.root.fore_little;
 
-    function getColl(len){
-      return Math.round((len / d_part)*1000) / 10;
+    // タブごとの基準値（standard）設定
+    const tabStandards = [
+      { tabSelector: '#menu_l', standard: length.root.fore_little },    // 人差し指～小指の付け根基準
+      { tabSelector: '#menu_c', standard: length.root.datum_middle_t }, // 手首～中指先端基準
+      { tabSelector: '#menu_r', standard: length.root.datum_middle_r }  // 手首～中指付け根基準
+    ];
+
+    function getColl(len, standard) {
+      if (!standard) return 0;
+      return Math.round((len / standard) * 1000) / 10;       
     }
 
-    function getDiff(len, std){
-      return Math.round((getColl(len) - std) * 10) / 10;
+    function getDiff(len, std, standard) {
+      return Math.round((getColl(len, standard) - std) * 10) / 10;
     }
 
     const t_name_l = {
@@ -735,88 +739,96 @@ if (button_click_event) {
       ['first_tip',    'f_t']
     ];
 
-    const make_t_l = (finger) => `
-      <tr>
-        <td>${t_name_l.finger[finger]}</td>
-        <td class="empty"></td>
-        <td class="empty"></td>
-      </tr>
-      ${j_keys_lc.map(([long, short]) => `
-      <tr>
-        <td>${t_name_l.joint[long]}</td>
-        <td>${getDiff(length[finger][long], collect_length.joint[finger][short])}</td>
-        <td>${collect_length.joint[finger][short]}</td>
-      </tr>`).join('')}`;
+    function renderTablesForTab(tabSelector, standard) {
+      const tabRoot = document.querySelector(tabSelector);
+      if (!tabRoot) return;
 
-    const table_l = document.querySelector('.coord_table_l');
-    if (table_l) {
-      table_l.innerHTML = ['fore', 'middle'].map(make_t_l).join('');
+      const make_t_l = (finger) => `
+        <tr>
+          <td>${t_name_l.finger[finger]}</td>
+          <td class="empty"></td>
+          <td class="empty"></td>
+        </tr>
+        ${j_keys_lc.map(([long, short]) => `
+        <tr>
+          <td>${t_name_l.joint[long]}</td>
+          <td>${getDiff(length[finger][long], collect_length.joint[finger][short], standard)}</td>
+          <td>${collect_length.joint[finger][short]}</td>
+        </tr>`).join('')}`;
+
+      const table_l = tabRoot.querySelector('.coord_table_l');
+      if (table_l) {
+        table_l.innerHTML = ['fore', 'middle'].map(make_t_l).join('');
+      }
+
+      const make_t_c = (finger) => `
+        <tr>
+          <td>${t_name_c.finger[finger]}</td>
+          <td class="empty"></td>
+          <td class="empty"></td>
+        </tr>
+        ${j_keys_lc.map(([long, short]) => `
+        <tr>
+          <td>${t_name_c.joint[long]}</td>
+          <td>${getDiff(length[finger][long], collect_length.joint[finger][short], standard)}</td>
+          <td>${collect_length.joint[finger][short]}</td>
+        </tr>`).join('')}`;
+
+      const table_c = tabRoot.querySelector('.coord_table_c');
+      if (table_c) {
+        table_c.innerHTML = ['third', 'little'].map(make_t_c).join('');
+      }
+
+      const table_r = tabRoot.querySelector('.coord_table_r');
+      if (table_r) {
+        table_r.innerHTML = `
+          <tr>
+            <td>${t_name_r.part.thumb}</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>${t_name_r.joint.second_first}</td>
+            <td>${getDiff(length.thumb.second_first, collect_length.joint.thumb.s_f, standard)}</td>
+            <td>${collect_length.joint.thumb.s_f}</td>
+          </tr>
+          <tr>
+            <td>${t_name_r.joint.first_tip}</td>
+            <td>${getDiff(length.thumb.first_tip, collect_length.joint.thumb.f_t, standard)}</td>
+            <td>${collect_length.joint.thumb.f_t}</td>
+          </tr>
+          <tr>
+            <td>その他</td>
+            <td class="empty"></td>
+            <td class="empty"></td>
+          </tr>
+          <tr>
+            <td>${t_name_r.root.datum_middle}</td>
+            <td>${getDiff(length.root.datum_middle_r, collect_length.root.d_m, standard)}</td>
+            <td>${collect_length.root.d_m}</td>
+          </tr>
+          <tr>
+            <td>${t_name_r.root.datum_thumb}</td>
+            <td>${getDiff(length.root.datum_thumb, collect_length.root.d_t, standard)}</td>
+            <td>${collect_length.root.d_t}</td>
+          </tr>
+          <tr>
+            <td>${t_name_r.root.thumb_fore}</td>
+            <td>${getDiff(length.root.thumb_fore, collect_length.root.t_f, standard)}</td>
+            <td>${collect_length.root.t_f}</td>
+          </tr>
+          <tr>
+            <td>${t_name_r.root.fore_little}</td>
+            <td>${getDiff(length.root.fore_little, collect_length.root.f_l, standard)}</td>
+            <td>${collect_length.root.f_l}</td>
+          </tr>
+        `;
+      }
     }
 
-    const make_t_c = (finger) => `
-      <tr>
-        <td>${t_name_c.finger[finger]}</td>
-        <td class="empty"></td>
-        <td class="empty"></td>
-      </tr>
-      ${j_keys_lc.map(([long, short]) => `
-      <tr>
-        <td>${t_name_c.joint[long]}</td>
-        <td>${getDiff(length[finger][long], collect_length.joint[finger][short])}</td>
-        <td>${collect_length.joint[finger][short]}</td>
-      </tr>`).join('')}`;
-
-    const table_c = document.querySelector('.coord_table_c');
-    if (table_c) {
-      table_c.innerHTML = ['third', 'little'].map(make_t_c).join('');
-    }
-
-    const table_r = document.querySelector('.coord_table_r');
-    if (table_r) {
-      table_r.innerHTML = '';
-      table_r.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td>${t_name_r.part.thumb}</td>
-          <td class="empty"></td>
-          <td class="empty"></td>
-        </tr>
-        <tr>
-          <td>${t_name_r.joint.second_first}</td>
-          <td>${getDiff(length.thumb.second_first, collect_length.joint.thumb.s_f)}</td>
-          <td>${collect_length.joint.thumb.s_f}</td>
-        </tr>
-        <tr>
-          <td>${t_name_r.joint.first_tip}</td>
-          <td>${getDiff(length.thumb.first_tip, collect_length.joint.thumb.f_t)}</td>
-          <td>${collect_length.joint.thumb.f_t}</td>
-        </tr>
-        <tr>
-          <td>その他</td>
-          <td class="empty"></td>
-          <td class="empty"></td>
-        </tr>
-        <tr>
-          <td>${t_name_r.root.datum_middle}</td>
-          <td>${getDiff(length.root.datum_middle, collect_length.root.d_m)}</td>
-          <td>${collect_length.root.d_m}</td>
-        </tr>
-        <tr>
-          <td>${t_name_r.root.datum_thumb}</td>
-          <td>${getDiff(length.root.datum_thumb, collect_length.root.d_t)}</td>
-          <td>${collect_length.root.d_t}</td>
-        </tr>
-        <tr>
-          <td>${t_name_r.root.thumb_fore}</td>
-          <td>${getDiff(length.root.thumb_fore, collect_length.root.t_f)}</td>
-          <td>${collect_length.root.t_f}</td>
-        </tr>
-        <tr>
-          <td>${t_name_r.root.fore_little}</td>
-          <td>${getDiff(length.root.fore_little, collect_length.root.f_l)}</td>
-          <td>${collect_length.root.f_l}</td>
-        </tr>
-      `);
-    }
+    tabStandards.forEach(({ tabSelector, standard }) => {
+      renderTablesForTab(tabSelector, standard);
+    });
   });
 }
 
@@ -980,11 +992,11 @@ function animate() {
 animate();
 
 const Overlay = document.getElementById("select_model_c");
-document.getElementById("select_b").addEventListener("click",() =>{
+document.getElementById("select_b").addEventListener("click", () => {
   Overlay.classList.remove("hidden");
 });
 
-document.getElementById("closebutton").addEventListener("click",()=>{
+document.getElementById("closebutton").addEventListener("click", () => {
   Overlay.classList.add("hidden");
 });
 
